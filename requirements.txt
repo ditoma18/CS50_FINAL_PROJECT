@@ -1,0 +1,4 @@
+requests
+pytest
+json
+# I need to run pip install -r requirements.txt to install the dependencies listed in the requirements.txt file. to set up the environment
