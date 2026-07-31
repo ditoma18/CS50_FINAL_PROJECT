@@ -1,43 +1,29 @@
-🧭 L'objectif général du programme
-Ce code est le moteur d'une application pour console destinée aux pêcheurs du Port de Lomé (Togo). Son but est d'améliorer leur sécurité en mer (météo, alertes d'urgence) et de les aider à respecter les règles de pêche locales pour protéger l'environnement.
+# Fishing Assistant App
 
-📋 Détail des fonctionnalités (Menu Principal)
-Lorsque le pêcheur lance le programme, il fait face à un menu avec 5 choix :
+#### Video Demo: [https://youtu.be/link](link)
 
-1. Consulter la météo marine (Option 1)
-Ce qu'elle fait : L'application se connecte à internet pour récupérer la météo du jour et l'état de la mer (vitesse du vent, hauteur des vagues, force des courants, visibilité).
+#### Description
 
-Le petit plus : Le programme analyse ces données et affiche automatiquement un voyant de sécurité :
+The Fishing Assistant App is a command-line Python application designed to assist artisanal fishers by providing useful information before and during fishing activities. The objective of the project is to demonstrate how simple software can contribute to safer fishing operations by combining weather forecasts, marine conditions, fishery regulations, and emergency communication into a single application.
 
-🟢 SAFE : Tout va bien, vous pouvez pêcher.
+The inspiration for this project comes from my background in oceanography and my interest in developing digital tools that can support sustainable fisheries in Togo. Small-scale fishers often depend on weather conditions and local knowledge before going to sea. However, access to marine forecasts and emergency reporting tools is not always straightforward. This project simulates how these services could be integrated into one lightweight application.
 
-⚠️ CAUTION : Attention, la mer commence à s'agiter.
+The application is written entirely in Python and follows the requirements of the CS50P final project. The main program is located in **project.py**, while the automated tests are implemented in **test_project.py** using pytest.
 
-🔴 DANGER : Rester au port, les conditions sont trop dangereuses (grosses vagues ou vents violents).
+When the application starts, it displays a menu with five options.
 
-Sécurité déconnexion : Si la pirogue s'éloigne trop et perd internet, l'application ne plante pas. Elle affiche un message d'avertissement propre indiquant que la connexion satellite est perdue.
+The first option allows the user to obtain localized weather and marine forecasts. The application simulates the current GPS position of a fishing boat near the Port of Lomé by generating slightly different latitude and longitude values around the real location. These coordinates are then sent to the Open-Meteo Weather API and the Open-Meteo Marine API. The program retrieves atmospheric variables such as temperature, precipitation probability, visibility, and wind speed, together with marine variables including wave height, wave direction, ocean current velocity, and ocean current direction. These values are combined into a single timeline and displayed in a formatted forecast table. Each forecast is also classified into one of three navigation safety levels: SAFE, CAUTION, or DANGER, depending on the forecasted wind speed, wave height, and visibility.
 
-2. Guide des poissons et réglementations (Option 2)
-Ce qu'elle fait : Le pêcheur tape le nom d'un poisson (comme la Sardinelle ou l'Anchois). L'application lui indique la taille minimale légale pour le pêcher et des conseils pour éviter la surpêche.
+The second option provides biological and regulatory information for commonly exploited fish species in Togo. Currently, the application contains information for Sardinella and Anchovy. For each species, the application displays the scientific name, minimum legal size, exploitation status, and a simple management recommendation. If the requested species is not available in the local database, the user can voluntarily contribute new information. These contributions are saved in a JSON file called **User_contribution.json**, allowing the database to be expanded over time.
 
-Si le poisson est inconnu : L'application propose au pêcheur d'enregistrer lui-même ce nouveau poisson. Elle lui demande son nom scientifique, sa taille et sa réglementation, puis sauvegarde tout cela dans un fichier sur l'ordinateur nommé User_contribution.json.
+The third option implements an SOS emergency system. When a fisher is in danger, the application generates an emergency report containing the fisher identification code, the simulated GPS coordinates, and a Google Maps link pointing to the reported location. The information is saved inside **sos_repository.json**, which represents a simplified emergency repository that could be accessed by rescue teams or a shore command center. Before saving the alert, the application validates the latitude and longitude values to ensure they are geographically valid.
 
-3. Lancer une alerte SOS d'urgence (Option 3)
-Ce qu'elle fait : En cas de problème grave en mer (panne, tempête), le pêcheur entre son numéro d'immatriculation.
+The fourth option reads all emergency reports stored inside the SOS repository and displays them in a structured format. If no emergency alerts are available, the application simply informs the user that there are currently no active incidents.
 
-Comment ça marche : L'application simule la position géographique (GPS) de la pirogue autour de Lomé, crée automatiquement un lien Google Maps précis pour les secours, et enregistre cette alerte dans le fichier central des urgences.
+The project contains several custom functions, each responsible for one specific task. The **simulate_gps()** function generates realistic fishing positions around Lomé. The **get_combined_marine_forecast()** function downloads and combines weather and marine forecasts from the Open-Meteo services. The **calculate_safety_flag()** function evaluates navigation conditions according to predefined safety thresholds. The **get_species_advice()** function retrieves fisheries information or records new user contributions. The **trigger_sos()** function creates emergency reports, while **read_shore_alerts()** safely reads all stored SOS reports from the JSON repository.
 
-4. Voir les alertes au centre de commande à terre (Option 4)
-Ce qu'elle fait : Cette option est utilisée par l'équipe de secours restée au port. Elle lit le fichier des urgences (sos_repository.json) et affiche la liste de toutes les pirogues en détresse avec leur position GPS exacte et leur lien Google Maps pour envoyer les sauveteurs au bon endroit.
+The project also includes automated tests written with pytest. The tests verify the navigation safety classification, the fish species information database, the SOS alert generation process, the emergency repository reader, GPS coordinate simulation, and the validation of invalid geographic coordinates. Internet-dependent functions were intentionally not tested because they rely on external services whose availability cannot be guaranteed during automated grading.
 
-5. Quitter (Option 5)
-Ce qu'elle fait : Ferme proprement l'application en saluant le pêcheur ("Stay safe on the water! We love what you do.").
+Several design decisions were made during development. I chose JSON files instead of a database because they are lightweight, human-readable, and perfectly adequate for a small command-line application. I also decided to separate weather retrieval, safety evaluation, fish regulations, and SOS management into independent functions. This modular design makes the program easier to maintain, understand, and test.
 
-🛠️ Les fonctions "cachées" (Sous le capot)
-Pour que tout cela fonctionne, le code utilise plusieurs petits outils en arrière-plan :
-
-simulate_gps() : Comme un vrai GPS n'est pas branché à l'ordinateur, cette fonction invente de fausses coordonnées géographiques, mais toujours très proches des côtes de Lomé/Gbétsogbé pour que les tests restent réalistes.
-
-calculate_safety_flag() : C'est le cerveau qui décide si la météo est verte, orange ou rouge en fonction des limites fixées (ex: danger si les vagues dépassent 1,8 mètre).
-
-read_shore_alerts() : Un petit assistant qui va lire le fichier des alertes SOS sans bloquer ou faire bugger le programme si le fichier est vide ou n'existe pas encore.
+Although this application is only a prototype, it demonstrates how Python can be used to integrate APIs, file handling, data validation, and automated testing into a practical tool that addresses real-world challenges faced by artisanal fishers. In the future, I would like to transform this project into a mobile application with real GPS integration, offline capabilities, multilingual support, and direct communication with national fisheries and maritime safety authorities.
