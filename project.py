@@ -3,14 +3,14 @@ import random
 import sys
 import requests
 
-# Constant Port Coordinates for Gbétsogbé / Lomé, Togo
+# Lomé (Togo) Fishing Port Coordinates
 LOME_LAT = 6.12
 LOME_LON = 1.22
 
 
 def main():
     print("=========================================")
-    print("   LOMÉ PORT MARITIME APP CORE SYSTEM   ")
+    print("   WELCOME TO YOUR FISHING ASSISTANT APP   ")
     print("=========================================")
 
     while True:
@@ -18,7 +18,7 @@ def main():
         print("1. Assess Localized Weather & Marine previsions")
         print("2. Get Fish Species Regulations")
         print("3. BROADCAST PANIC EMERGENCY (SOS)")
-        print("4. View Shore Command Center Alerts (Land-Base)")
+        print("4. View Shore Command Center Alerts")
         print("5. Terminate Connection")
 
         choice = input("\nSelect an option from 1 to 5: ").strip()
@@ -72,7 +72,7 @@ def main():
 
 
 def simulate_gps():
-    """Varies coordinates near Lomé Port to simulate vessel spatial tracking."""
+    """Varies coordinates near Lomé Port to simulate vessel spatial tracking. In real situation a GPS will be used."""
     lat = LOME_LAT + random.uniform(-0.04, 0.04)
     lon = LOME_LON + random.uniform(-0.04, 0.04)
     return round(lat, 4), round(lon, 4)
@@ -111,17 +111,16 @@ def get_combined_marine_forecast(lat=LOME_LAT, lon=LOME_LON):
                 "current_dir": m_data["ocean_current_direction"][i] if m_data.get("ocean_current_direction") else 0
             })
 
-        # SUCCESS PATH: This return a dictionary matching the error fallback path!
         return {"timeline": timeline, "is_live": True}
 
     except (requests.RequestException, KeyError, IndexError):
         # Offline situation
-        fallback = "Internet connection is needed to be able to see weather forcasts"
+        fallback = "You need Internet connection to be able to see weather and marine forcasts"
         return {"timeline": fallback, "is_live": False}
         
         
 def calculate_safety_flag(wind, wave, visibility):
-    """Evaluates combined risk matrix parameters to determine an operational flag."""
+    """Here I fix risks rules."""
     if wind > 7.0 or wave > 1.8 or visibility < 3.0:
         return "🔴 DANGER"
     elif wind > 5.0 or wave > 1.2 or visibility < 6.0:
@@ -130,8 +129,8 @@ def calculate_safety_flag(wind, wave, visibility):
 
 
 def print_marine_dashboard(timeline):
-    """Renders a structured terminal dashboard showing evolution of metrics."""
-    print("\n📊 24-HOUR COMBINED MARITIME TIMELINE FORECAST")
+    """Here I show to fishers a table with previsions."""
+    print("\n📊 24-HOUR FORECAST")
     print("=" * 105)
     header = f"{'Hour':<6} | {'Wind(m/s)':<10} | {'Wave(m)':<8} | {'Wave Dir':<8} | {'Current(m/s)':<12} | {'Vis(km)':<8} | {'Rain%':<6} | {'Status'}"
     print(header)
@@ -145,7 +144,7 @@ def print_marine_dashboard(timeline):
 
 
 def get_species_advice(species_name):
-    """Provides biological and regulatory information for Togo."""
+    """ Here I Provide biological and regulatory information for Togo most fished species. but I also let fishers possibilities to contribute"""
     database = {
         "sardinella": {
             "scientific name": "Sardinella aurita",
@@ -182,13 +181,11 @@ def get_species_advice(species_name):
         user_contribution.append(new_info)
         with open('User_contribution.json', 'w') as f:
             json.dump(user_contribution, f, indent = 4, ensure_ascii=False)
-        # return f"new contribution : {user_contribution}"
-
-        #return "❌ Species data is unavailable or not registered yet in our database."
+        return f"new contribution : {user_contribution}"
 
 
 def trigger_sos(fisher_id, lat, lon):
-    """Pushes a validation event to the land-based JSON command repository."""
+    """Once in danger at sea, I offer the possibility to fisher to trigger an SOS alert."""
     if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
         raise ValueError("Invalid geographic coordinates.")
 
@@ -208,7 +205,7 @@ def trigger_sos(fisher_id, lat, lon):
     with open("sos_repository.json", "w", encoding="utf-8") as file:
         json.dump(repository_data, file, indent=4)
 
-    return f"\n🚨 TRANSMISSION LOCKOUT PROCESSED 🚨\nData dropped securely inside the Shore Command Base repository.\nLink generated for Rescue Crews: {maps_link}"
+    return f"\n🚨 YOUR ALERT WAS TRANSMITED 🚨.\nLink generated for Rescue Crews: {maps_link}"
 
 
 def read_shore_alerts():

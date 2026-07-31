@@ -26,5 +26,12 @@
         "longitude": 1.2259,
         "map_anchor": "https://www.google.com/maps?q=6.1149,1.2259",
         "status": "UNRESOLVED / ACTIVE DISPATCH"
+    },
+    {
+        "fisher_id": "AAAXXXXX",
+        "latitude": 6.1335,
+        "longitude": 1.2196,
+        "map_anchor": "https://www.google.com/maps?q=6.1335,1.2196",
+        "status": "UNRESOLVED / ACTIVE "
     }
 ]
