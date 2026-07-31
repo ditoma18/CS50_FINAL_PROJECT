@@ -15,7 +15,7 @@ def main():
 
     while True:
         print("\n[MAIN MENU]")
-        print("1. Assess Localized Weather & Marine previsions")
+        print("1. Assess Localized Weather & Marine Forecasts")
         print("2. Get Fish Species Regulations")
         print("3. BROADCAST PANIC EMERGENCY (SOS)")
         print("4. View Shore Command Center Alerts")
@@ -25,7 +25,7 @@ def main():
 
         if choice == "1":
             curr_lat, curr_lon = simulate_gps()
-            print("Getting atmospheric and marine previsons from Open meteo...")
+            print("Getting atmospheric and marine forecasts from Open-Meteo...")
 
             forecast_data = get_combined_marine_forecast(curr_lat, curr_lon)
             
@@ -53,7 +53,7 @@ def main():
             print(sos_message)
 
         elif choice == "4":
-            print("\nConnecting to land-based emergency repository standard protocols...")
+            print("\nConnecting to land-based emergency repository ...")
             alerts = read_shore_alerts()
             if not alerts:
                 print("🟢 Operational Status: Clear. No active SOS alerts recorded.")
@@ -76,6 +76,7 @@ def simulate_gps():
     lat = LOME_LAT + random.uniform(-0.04, 0.04)
     lon = LOME_LON + random.uniform(-0.04, 0.04)
     return round(lat, 4), round(lon, 4)
+
 
 def get_combined_marine_forecast(lat=LOME_LAT, lon=LOME_LON):
     """Fetches atmospheric and marine parameters, stitching them into a 24-hour timeline."""
@@ -113,14 +114,14 @@ def get_combined_marine_forecast(lat=LOME_LAT, lon=LOME_LON):
 
         return {"timeline": timeline, "is_live": True}
 
-    except (requests.RequestException, KeyError, IndexError):
+    except (requests.RequestException, KeyError, IndexError, TypeError, ValueError):
         # Offline situation
-        fallback = "You need Internet connection to be able to see weather and marine forcasts"
+        fallback = "You need an Internet connection to access weather and marine forecasts."
         return {"timeline": fallback, "is_live": False}
         
         
 def calculate_safety_flag(wind, wave, visibility):
-    """Here I fix risks rules."""
+    """Determine the navigation safety level from forecast conditions."""
     if wind > 7.0 or wave > 1.8 or visibility < 3.0:
         return "🔴 DANGER"
     elif wind > 5.0 or wave > 1.2 or visibility < 6.0:
@@ -129,7 +130,7 @@ def calculate_safety_flag(wind, wave, visibility):
 
 
 def print_marine_dashboard(timeline):
-    """Here I show to fishers a table with previsions."""
+    """Here I display the marine forecast table."""
     print("\n📊 24-HOUR FORECAST")
     print("=" * 105)
     header = f"{'Hour':<6} | {'Wind(m/s)':<10} | {'Wave(m)':<8} | {'Wave Dir':<8} | {'Current(m/s)':<12} | {'Vis(km)':<8} | {'Rain%':<6} | {'Status'}"
@@ -150,7 +151,7 @@ def get_species_advice(species_name):
             "scientific name": "Sardinella aurita",
             "min_size": "12 cm",
             "status": "Overfished Threat",
-            "tip": "Avoid juvenile spawning zones during the major upwelling window (July - September)."
+            "regulation": "Avoid juvenile spawning zones during the major upwelling window (July - September)."
         },
         "anchovy": {
             "scientific name": "Engraulis encrasicolus",
@@ -163,25 +164,48 @@ def get_species_advice(species_name):
     clean_name = species_name.strip().lower()
     if clean_name in database:
         info = database[clean_name]
-        return f"\n[INFO] {clean_name.upper()} ({info['scientific']})\n- Legal Size Limit: >= {info['min_size']}\n- Sustainability: {info['status']}\n- Management: {info['tip']}"
+        return f"\n[INFO] {clean_name.upper()} ({info['scientific name']})\n- Legal Size Limit: >= {info['min_size']}\n- Sustainability: {info['status']}\n- Management: {info['regulation']}"
+
     else:
-        user_contribution = []
-        print('Species data is unavailable or not registered yet in our database.\n\nIf you want to register new species, Put it here. Thank you! :)')
-        specie_name = input('specie_name : ')
-        scientific_name = input('scientific name : ')
-        min_size = input('minimum size : ')
-        status = ('status : ')
-        regulation = ('Regulation : ')
-        new_info = {specie_name : {
-                    "scientific name": scientific_name,
-                    "min_size": min_size,
-                    "status": status,
-                    "regulation": regulation }
-                    }
+
+        print(
+            "Species data is unavailable or not registered yet in our database.\n"
+            "If you want to register new species, put it here. Thank you! :)"
+        )
+
+        specie_name = input("specie_name : ")
+        scientific_name = input("scientific name : ")
+        min_size = input("minimum size : ")
+        status = input("status : ")
+        regulation = input("Regulation : ")
+
+        new_info = {
+            specie_name: {
+                "scientific name": scientific_name,
+                "min_size": min_size,
+                "status": status,
+                "regulation": regulation
+            }
+        }
+
+        try:
+            with open("User_contribution.json", "r", encoding="utf-8") as f:
+                user_contribution = json.load(f)
+
+        except (FileNotFoundError, json.JSONDecodeError):
+            user_contribution = []
+
         user_contribution.append(new_info)
-        with open('User_contribution.json', 'w') as f:
-            json.dump(user_contribution, f, indent = 4, ensure_ascii=False)
-        return f"new contribution : {user_contribution}"
+
+        with open("User_contribution.json", "w", encoding="utf-8") as f:
+            json.dump(
+                user_contribution,
+                f,
+                indent=4,
+                ensure_ascii=False
+            )
+
+        return "Thank you! Your contribution has been recorded."
 
 
 def trigger_sos(fisher_id, lat, lon):
@@ -203,9 +227,9 @@ def trigger_sos(fisher_id, lat, lon):
     repository_data.append(new_incident)
 
     with open("sos_repository.json", "w", encoding="utf-8") as file:
-        json.dump(repository_data, file, indent=4)
+        json.dump(repository_data, file, indent=4, ensure_ascii=False)
 
-    return f"\n🚨 YOUR ALERT WAS TRANSMITED 🚨.\nLink generated for Rescue Crews: {maps_link}"
+    return f"\n🚨 YOUR ALERT WAS TRANSMITTED 🚨.\nLink generated for Rescue Crews: {maps_link}"
 
 
 def read_shore_alerts():

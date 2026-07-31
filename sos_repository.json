@@ -1,37 +1,9 @@
 [
     {
-        "fisher_id": "ANONYMOUS_PIROGUE",
-        "latitude": 6.1557,
-        "longitude": 1.2478,
-        "map_anchor": "https://www.google.com/maps?q=6.1557,1.2478",
-        "status": "UNRESOLVED / ACTIVE DISPATCH"
-    },
-    {
-        "fisher_id": "AAXX",
-        "latitude": 6.1555,
-        "longitude": 1.2013,
-        "map_anchor": "https://www.google.com/maps?q=6.1555,1.2013",
-        "status": "UNRESOLVED / ACTIVE DISPATCH"
-    },
-    {
-        "fisher_id": "AAAA",
-        "latitude": 6.1375,
-        "longitude": 1.2363,
-        "map_anchor": "https://www.google.com/maps?q=6.1375,1.2363",
-        "status": "UNRESOLVED / ACTIVE DISPATCH"
-    },
-    {
-        "fisher_id": "AAYYY",
-        "latitude": 6.1149,
-        "longitude": 1.2259,
-        "map_anchor": "https://www.google.com/maps?q=6.1149,1.2259",
-        "status": "UNRESOLVED / ACTIVE DISPATCH"
-    },
-    {
-        "fisher_id": "AAAXXXXX",
-        "latitude": 6.1335,
-        "longitude": 1.2196,
-        "map_anchor": "https://www.google.com/maps?q=6.1335,1.2196",
+        "fisher_id": "AAAUUUUU",
+        "latitude": 6.1023,
+        "longitude": 1.2329,
+        "map_anchor": "https://www.google.com/maps?q=6.1023,1.2329",
         "status": "UNRESOLVED / ACTIVE "
     }
 ]
