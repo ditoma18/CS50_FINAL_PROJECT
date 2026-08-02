@@ -1,6 +1,6 @@
 # Fishing Assistant App
 
-#### Video Demo: [https://youtu.be/link](link)
+#### Video Demo: [https://youtu.be/zNXk8H_2uEw?si=Q6gz65qVCLeHHui2]
 
 #### Description
 
